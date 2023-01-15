@@ -1,0 +1,44 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Sync Playlist",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/sync_playlist.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "-p", "Tunsis",
+      ],
+    },
+    {
+      "name": "Python: Clean Filenames",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/clean_filenames.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        "/tmp/playlist-files",
+      ],
+    },
+    {
+      "name": "Python: Chunk Directory",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/chunk_directory.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": [
+        // "-f",
+        "-s 40",
+        // "-j",
+        "/tmp/playlist-files/Artists",
+      ],
+    }
+  ]
+}
