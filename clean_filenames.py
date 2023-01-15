@@ -40,7 +40,7 @@ class CharacterTranslator(object):
       chr(0x0303) : '',   # tilde
       chr(0x0306) : '',   # breve
       chr(0x0308) : 'e',  # umlaut
-      chr(0x030A) : '',   # ring above 
+      chr(0x030A) : '',   # ring above
       chr(0x030C) : '',   # caron
       chr(0x0327) : '',   # cedilla
       chr(0x0430) : 'a',  # cyrillic
@@ -125,14 +125,16 @@ class CharacterTranslator(object):
 
 
 class FilenameCleaner(object):
-  def __init__(self, ccdict_path=None):
+  def __init__(self, ccdict_path=None, dry_run=False):
     self.translator = CharacterTranslator(ccdict_path=ccdict_path)
     self.adjacent_dash_dot_re = re.compile(r'[-_]+\.')
     self.trailing_characters_re = re.compile(r'[-_. ]+$')
     self.leading_non_word_re = re.compile(r'(\A|/)[\W]*')
     self.leading_article_re = re.compile(r'(?i)(\A|/)(THE|DER|DIE|DAS) ([^/]*)')
+    self.dry_run = dry_run
 
   def recursive_clean(self, top):
+    print("%s filenames in %s" % ("Checking" if self.dry_run else "Cleaning", top))
     for root, dirnames, filenames in os.walk(top, topdown=False):
       for name in filenames:
         self.maybe_rename(os.path.join(root, name))
@@ -144,10 +146,12 @@ class FilenameCleaner(object):
     dirname = os.path.dirname(name)
     basename = os.path.basename(name)
     renamed = self.clean_name(basename)
+    dry = "would " if self.dry_run else ""
     if basename != renamed:
       renamed = os.path.join(dirname, renamed)
-      print("rename: %s\n     -> %s" % (name, renamed))
-      os.rename(name, renamed)
+      print("%srename: %s\n     -> %s" % (dry, name, renamed))
+      if not self.dry_run:
+        os.rename(name, renamed)
 
   def clean_name(self, name):
     root, ext = os.path.splitext(name)
@@ -161,7 +165,8 @@ class FilenameCleaner(object):
 
 def main():
   my_dir = os.path.dirname(sys.argv[0])
-  cleaner = FilenameCleaner(ccdict_path=my_dir)
+  dry_run = len(sys.argv) < 3 or sys.argv[2] != "-f"
+  cleaner = FilenameCleaner(ccdict_path=my_dir, dry_run=dry_run)
   cleaner.recursive_clean(sys.argv[1])
 
 if __name__ == "__main__":
