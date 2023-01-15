@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/local/bin/python3
 
 import argparse
 import itertools
@@ -37,17 +37,17 @@ def main(argv=None):
   args = parser.parse_args()
 
   if not args.playlist and not args.dest_dir:
-    print >>sys.stderr, "Specify either --playlist or --dest_dir or both."
+    print("Specify either --playlist or --dest_dir or both.", file=sys.stderr)
     return 1
 
   if args.dest_dir and not os.path.isdir(args.dest_dir):
-    print >>sys.stderr, "Destination must be a directory: %s" % args.dest_dir
+    print("Destination must be a directory: %s" % args.dest_dir, file=sys.stderr)
     return 1
 
   if args.playlist:
     delete_directory_contents(args.temp_dir)
     link_intro(args.temp_dir)
-    print >>sys.stderr, "Calculating symlinks"
+    print("Calculating symlinks", file=sys.stderr)
     symlink_tree = compute_symlink_paths(args.playlist, my_dir, args.library_xml)
 
     # artists = symlink_tree.get("Artists", dict())
@@ -63,7 +63,7 @@ def main(argv=None):
   if args.dest_dir:
     sync_files(args.temp_dir, args.dest_dir, dry_run)
     if dry_run:
-      print "\nPass -f to do it for real"
+      print("\nPass -f to do it for real")
 
 def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
   cleaner = FilenameCleaner(ccdict_path=my_dir)
@@ -103,7 +103,7 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
 def split_tree(tree, size=50):
   # First make fine-graned alpha groups
   alpha_tree = dict()
-  alpha_groups = itertools.groupby(tree.iteritems(), lambda item: item[0][0].upper())
+  alpha_groups = itertools.groupby(iter(tree.items()), lambda item: item[0][0].upper())
   for alpha, items in alpha_groups:
     alpha_tree.setdefault(alpha, dict()).update(dict(items))
 
@@ -131,25 +131,25 @@ def split_tree(tree, size=50):
 
 def print_tree(tree, level=0):
   if type(tree) is not dict:
-    print "--> %s%s" % ("  " * level, tree)
+    print("--> %s%s" % ("  " * level, tree))
   else:
-    for n, (k, v) in enumerate(sorted(tree.iteritems())):
-      print "%02d. %s%s" % (n + 1, "  " * level, k)
+    for n, (k, v) in enumerate(sorted(tree.items())):
+      print("%02d. %s%s" % (n + 1, "  " * level, k))
       print_tree(v, level+1)
 
 def make_symlinks(top_dir, symlink_tree):
   if not os.path.isdir(top_dir):
     os.makedirs(top_dir)
-  for item, child in sorted(symlink_tree.iteritems()):
+  for item, child in sorted(symlink_tree.items()):
     item_path = "%s/%s" % (top_dir, item)
     if type(child) is dict:
       make_symlinks(item_path, child)
     else:
-      print "%s\n->%s" % (child.encode('utf-8'), item_path.encode('utf-8'))
+      print("%s\n->%s" % (child.encode('utf-8'), item_path.encode('utf-8')))
       os.symlink(child, item_path)
 
 def delete_directory_contents(top):
-  print >>sys.stderr, "Clearing staging directory %s" % top
+  print("Clearing staging directory %s" % top, file=sys.stderr)
   for root, dirs, files in os.walk(top, topdown=False):
     for name in files:
       os.remove(os.path.join(root, name))
@@ -160,9 +160,9 @@ def delete_directory_contents(top):
 
 def link_intro(top_dir):
   if not os.path.isfile(INTRO_MP3):
-    print >>sys.stderr, "Not linking missing intro file %s" % INTRO_MP3
+    print("Not linking missing intro file %s" % INTRO_MP3, file=sys.stderr)
     return
-  print >>sys.stderr, "Linking intro file %s" % INTRO_MP3
+  print("Linking intro file %s" % INTRO_MP3, file=sys.stderr)
   dest = os.path.join(top_dir, os.path.basename(INTRO_MP3))
   if os.path.isfile(dest):
     os.remove(dest)
@@ -183,10 +183,10 @@ def sync_files(src_dir, dest_dir, dry_run):
     dest_dir + "/",
   ]
   if dry_run:
-    print >>sys.stderr, "Would sync to %s" % dest_dir
+    print("Would sync to %s" % dest_dir, file=sys.stderr)
     rsync.insert(1, "-n")
   else:
-    print >>sys.stderr, "Syncing to %s" % dest_dir
+    print("Syncing to %s" % dest_dir, file=sys.stderr)
   call(rsync)
 
 if __name__ == "__main__":

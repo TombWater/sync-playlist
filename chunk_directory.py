@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/local/bin/python3
 
 import argparse
 import itertools
@@ -7,14 +7,14 @@ import shutil
 import sys
 
 def move(src, dst, dry_run):
-  print "move: %s\n   -> %s" % (src, dst)
+  print("move: %s\n   -> %s" % (src, dst))
   if not dry_run:
     shutil.move(src, dst)
 
 def move_dirs(path, chunk_name, chunk, dry_run):
   chunk_root = os.path.join(path, chunk_name)
   if not os.path.isdir(chunk_root):
-    print "+dir: %s" % chunk_root
+    print("+dir: %s" % chunk_root)
     if not dry_run:
       os.makedirs(chunk_root)
   for d in chunk:
@@ -71,9 +71,9 @@ def split_directory(path, size, dry_run=False):
     summary[chunk_name] = len(chunk)
     move_dirs(path, chunk_name, chunk, dry_run)
 
-  print "\nsummary:"
+  print("\nsummary:")
   for c, n in sorted(summary.items()):
-    print "%s = %d items" % (c, n)
+    print("%s = %d items" % (c, n))
 
 def flatten_directory(path, dry_run=False):
   for d in sorted(os.listdir(path)):
@@ -83,7 +83,7 @@ def flatten_directory(path, dry_run=False):
         src = os.path.join(subdir, item)
         dst = os.path.join(path, item)
         move(src, dst, dry_run)
-      print "-del: %s" % subdir
+      print("-del: %s" % subdir)
       if not dry_run:
         os.rmdir(subdir)
 
@@ -103,7 +103,7 @@ def main():
   args = parser.parse_args()
 
   if not os.path.isdir(args.dir):
-    print >>sys.stderr, "Must be a directory: %s" % args.dir
+    print("Must be a directory: %s" % args.dir, file=sys.stderr)
     return 1
 
   dry_run = not args.force
@@ -112,11 +112,11 @@ def main():
   elif args.split > 0:
     split_directory(args.dir, args.split, dry_run)
   else:
-    print >>sys.stderr, "Split must be > 0"
+    print("Split must be > 0", file=sys.stderr)
     return 1
 
   if dry_run:
-    print "\nPass -f to do it for real"
+    print("\nPass -f to do it for real")
 
 if __name__ == "__main__":
   main()

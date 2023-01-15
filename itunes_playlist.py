@@ -1,11 +1,11 @@
-#! /usr/bin/python
+#! /usr/local/bin/python3
 # Copyright 2008, Tom Bridgwater
 
 
 import os
 import sys
 import re
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import UserDict
 import xml.sax.handler
 
@@ -66,7 +66,7 @@ class iTunesLibrary(object):
     if music_library_xml_path is None:
       #music_library_xml_path = "%s/Music/iTunes/iTunes Library.xml" % os.getenv('HOME') 
       music_library_xml_path = "%s/Music/Music/Library.xml" % os.getenv('HOME') 
-    print >>sys.stderr, "Reading iTunes data from %s" % music_library_xml_path
+    print("Reading iTunes data from %s" % music_library_xml_path, file=sys.stderr)
     self.music_library_xml_path = music_library_xml_path
     handler = PListHandler()
     parser.setContentHandler(handler)
@@ -122,7 +122,7 @@ class iTunesTrackDict(UserDict.UserDict):
 
 FILE_PREFIX_RE = re.compile('^file://(localhost)?')
 def file_string(location):
-  location = urllib.unquote(str(location)).decode('utf-8')
+  location = urllib.parse.unquote(str(location)).decode('utf-8')
   (location, count) = FILE_PREFIX_RE.subn('', location)
   return location.encode('utf-8') if count else None
 
@@ -168,22 +168,22 @@ Usage:
   itunes = iTunesLibrary(xml_path)
 
   if playlist_name == '?':
-    print 'Music Folder: %s' % itunes.music_folder
-    print '[%d playlists]' % len(itunes.playlists)
+    print('Music Folder: %s' % itunes.music_folder)
+    print('[%d playlists]' % len(itunes.playlists))
     for playlist_name, playlist in sorted(itunes.playlists.items()):
-      print '%s (%d tracks)' % (playlist_name, len(playlist))
+      print('%s (%d tracks)' % (playlist_name, len(playlist)))
     return 0
 
   try:
     playlist = itunes.playlists[playlist_name]
   except KeyError:
-    print >>sys.stderr, "[Error] No such playlist: '%s'" % playlist_name
+    print("[Error] No such playlist: '%s'" % playlist_name, file=sys.stderr)
     return 1
 
   for track in playlist:
     file_path = track['File Path']
     if file_path:
-      print file_path
+      print(file_path)
 
 
 if __name__ == "__main__":
