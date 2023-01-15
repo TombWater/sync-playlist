@@ -163,7 +163,7 @@ class FilenameCleaner(object):
 
 
 def main():
-  my_dir = os.path.dirname(sys.argv[0])
+  my_dir = os.path.dirname(os.path.realpath(__file__))
   dry_run = len(sys.argv) < 3 or sys.argv[2] != "-f"
   cleaner = FilenameCleaner(ccdict_path=my_dir, dry_run=dry_run)
   cleaner.recursive_clean(sys.argv[1])

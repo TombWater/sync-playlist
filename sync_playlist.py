@@ -17,7 +17,7 @@ INTRO_MP3 = "%s/Music/Ringtones/+A.mp3" % os.getenv("HOME")
 def main(argv=None):
   """Collect a symlink farm out of an iTunes playlist, and rsync it to a destination."""
 
-  my_dir = os.path.dirname(sys.argv[0])
+  my_dir = os.path.dirname(os.path.realpath(__file__))
 
   parser = argparse.ArgumentParser(
       description=main.__doc__)
