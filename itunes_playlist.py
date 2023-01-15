@@ -6,7 +6,7 @@ import os
 import sys
 import re
 import urllib.request, urllib.parse, urllib.error
-import UserDict
+from collections import UserDict
 import xml.sax.handler
 
 class PListHandler(xml.sax.handler.ContentHandler):
@@ -64,8 +64,8 @@ class iTunesLibrary(object):
   def __init__(self, music_library_xml_path=None):
     parser = self.make_xml_parser()
     if music_library_xml_path is None:
-      #music_library_xml_path = "%s/Music/iTunes/iTunes Library.xml" % os.getenv('HOME') 
-      music_library_xml_path = "%s/Music/Music/Library.xml" % os.getenv('HOME') 
+      #music_library_xml_path = "%s/Music/iTunes/iTunes Library.xml" % os.getenv('HOME')
+      music_library_xml_path = "%s/Music/Music/Library.xml" % os.getenv('HOME')
     print("Reading iTunes data from %s" % music_library_xml_path, file=sys.stderr)
     self.music_library_xml_path = music_library_xml_path
     handler = PListHandler()
@@ -93,7 +93,7 @@ class iTunesLibrary(object):
     return parser
 
 
-class iTunesTrackDict(UserDict.UserDict):
+class iTunesTrackDict(UserDict):
   """
   A wrapper for the dictionary of tracks in an iTunes library. Lazilly
   synthesizes the "File Path" value for tracks that are stored as local files,
@@ -102,7 +102,7 @@ class iTunesTrackDict(UserDict.UserDict):
   file_prefix_re = re.compile('^file://(localhost)?')
 
   def __init__(self, tracks):
-    UserDict.UserDict.__init__(self)
+    UserDict.__init__(self)
     self.data = tracks
 
   def __getitem__(self, id):
@@ -122,18 +122,18 @@ class iTunesTrackDict(UserDict.UserDict):
 
 FILE_PREFIX_RE = re.compile('^file://(localhost)?')
 def file_string(location):
-  location = urllib.parse.unquote(str(location)).decode('utf-8')
+  location = urllib.parse.unquote(str(location)) #.decode('utf-8')
   (location, count) = FILE_PREFIX_RE.subn('', location)
-  return location.encode('utf-8') if count else None
+  return location if count else None
 
 
-class iTunesPlaylist(UserDict.UserDict):
+class iTunesPlaylist(UserDict):
   """
   A wrapper for a playlist dictionary in an iTunes library. Provides a
   getitem method for random access to and iteration over the tracks.
   """
   def __init__(self, playlist, library_tracks):
-    UserDict.UserDict.__init__(self)
+    UserDict.__init__(self)
     self.data = playlist
     self._library_tracks = library_tracks
 
@@ -146,6 +146,10 @@ class iTunesPlaylist(UserDict.UserDict):
     items = self.data.get('Playlist Items')
     return len(items) if items else 0
 
+  def __iter__(self):
+    items = self.data.get('Playlist Items')
+    for item in items:
+      yield self._library_tracks[item['Track ID']]
 
 def main(argv=None):
   """Display the file paths to the tracks in an iTunes playlist.

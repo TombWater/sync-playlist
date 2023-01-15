@@ -76,7 +76,6 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
   for track in playlist:
     file_path = track["File Path"]
     if file_path:
-      file_path = file_path.decode("utf-8")
       #relative_path = path_prefix_re.sub("", file_path)
       if file_path.startswith(path_prefix):
         relative_path = file_path[len(path_prefix):]
@@ -145,7 +144,7 @@ def make_symlinks(top_dir, symlink_tree):
     if type(child) is dict:
       make_symlinks(item_path, child)
     else:
-      print("%s\n->%s" % (child.encode('utf-8'), item_path.encode('utf-8')))
+      print("%s\n->%s" % (child, item_path))
       os.symlink(child, item_path)
 
 def delete_directory_contents(top):

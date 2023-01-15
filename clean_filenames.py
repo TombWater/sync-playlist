@@ -93,7 +93,7 @@ class CharacterTranslator(object):
     if os.path.isdir(ccdict_path):
       ccdict_path = os.path.join(ccdict_path, "ccdict.txt")
     print("Loading Mandarin translations from %s" % ccdict_path, file=sys.stderr)
-    for line in open(ccdict_path):
+    for line in open(ccdict_path, encoding="latin-1"):
       match = mandarin_re.match(line)
       if match:
         code = int(match.group(1), 16)
@@ -142,7 +142,6 @@ class FilenameCleaner(object):
         self.maybe_rename(os.path.join(root, name))
 
   def maybe_rename(self, name):
-    name = name.decode('utf-8')
     dirname = os.path.dirname(name)
     basename = os.path.basename(name)
     renamed = self.clean_name(basename)
