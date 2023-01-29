@@ -3,7 +3,6 @@
 import argparse
 import itertools
 import os
-import re
 import sys
 from subprocess import call
 
@@ -69,12 +68,11 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
   cleaner = FilenameCleaner(ccdict_path=my_dir)
   itunes = iTunesLibrary(library_xml)
   playlist = itunes.playlists[playlist_name]
-  #path_prefix_re = re.compile(".*/iTunes Music/")
-  path_prefix = itunes.music_folder
-  compilations_re = re.compile("Compilations/")
+  path_prefix = os.path.realpath(itunes.music_folder)
+  print("iTunes folder: ", path_prefix)
   symlink_tree = {}
   for track in playlist:
-    file_path = track["File Path"]
+    file_path = os.path.realpath(track["File Path"])
     if file_path:
       #relative_path = path_prefix_re.sub("", file_path)
       if file_path.startswith(path_prefix):
