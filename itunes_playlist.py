@@ -64,7 +64,6 @@ class iTunesLibrary(object):
   def __init__(self, music_library_xml_path=None):
     parser = self.make_xml_parser()
     if music_library_xml_path is None:
-      #music_library_xml_path = "%s/Music/iTunes/iTunes Library.xml" % os.getenv('HOME')
       music_library_xml_path = "%s/Music/Music/Library.xml" % os.getenv('HOME')
     print("Reading iTunes data from %s" % music_library_xml_path, file=sys.stderr)
     self.music_library_xml_path = music_library_xml_path
@@ -111,11 +110,6 @@ class iTunesTrackDict(UserDict):
       file_path = None
       if 'Location' in track:
         file_path = file_string(track['Location'])
-        #location = str(track['Location'])
-        #location = urllib.unquote(location).decode('utf-8')
-        #(location, count) = self.file_prefix_re.subn('', location)
-        #if count:
-        #  file_path = location.encode('utf-8')
       track['File Path'] = file_path
     return track
 

@@ -6,7 +6,6 @@ import os
 import sys
 from subprocess import call
 
-import chunk_directory
 from clean_filenames import FilenameCleaner
 from itunes_playlist import iTunesLibrary
 
@@ -48,14 +47,6 @@ def main(argv=None):
     link_intro(args.temp_dir)
     print("Calculating symlinks", file=sys.stderr)
     symlink_tree = compute_symlink_paths(args.playlist, my_dir, args.library_xml)
-
-    # artists = symlink_tree.get("Artists", dict())
-    # if artists:
-    #   symlink_tree["Artists"] = split_tree(artists)
-    # compilations = symlink_tree.get("Compilations", dict())
-    # if compilations:
-    #   symlink_tree["Compilations"] = split_tree(compilations)
-
     make_symlinks(args.temp_dir, symlink_tree)
 
   dry_run = not args.force
@@ -74,7 +65,6 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
   for track in playlist:
     file_path = os.path.realpath(track["File Path"])
     if file_path:
-      #relative_path = path_prefix_re.sub("", file_path)
       if file_path.startswith(path_prefix):
         relative_path = file_path[len(path_prefix):]
       else:
@@ -83,7 +73,6 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
       if track.get("Genre", "").lower() == "classical":
         relative_path = "Classical/%s" % relative_path
       elif not track.get("Compilation"):
-      #if not compilations_re.match(relative_path):
         relative_path = "Artists/%s" % relative_path
 
       # Split the relative path into a tree of dictionaries
