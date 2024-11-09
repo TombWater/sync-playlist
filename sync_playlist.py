@@ -30,6 +30,8 @@ def main(argv=None):
   parser.add_argument("-t", "--temp_dir",
       default=TMP_DIR,
       help="Path to the directory where symlinks will be collected.")
+  parser.add_argument("--dirty", action="store_true",
+      help="Don't clean filenames.")
   parser.add_argument("-f", "--force", action="store_true",
       help="Really sync rather than just showing what rsync would do.")
   args = parser.parse_args()
@@ -46,7 +48,7 @@ def main(argv=None):
     delete_directory_contents(args.temp_dir)
     link_intro(args.temp_dir)
     print("Calculating symlinks", file=sys.stderr)
-    symlink_tree = compute_symlink_paths(args.playlist, my_dir, args.library_xml)
+    symlink_tree = compute_symlink_paths(args.playlist, my_dir, args.library_xml, args.dirty)
     make_symlinks(args.temp_dir, symlink_tree)
 
   dry_run = not args.force
@@ -55,7 +57,7 @@ def main(argv=None):
     if dry_run:
       print("\nPass -f to do it for real")
 
-def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
+def compute_symlink_paths(playlist_name, my_dir, library_xml=None, dirty=False):
   cleaner = FilenameCleaner(ccdict_path=my_dir)
   itunes = iTunesLibrary(library_xml)
   playlist = itunes.playlists[playlist_name]
@@ -69,7 +71,8 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
         relative_path = file_path[len(path_prefix):]
       else:
         relative_path = file_path
-      relative_path = cleaner.clean_name(relative_path)
+      if not dirty:
+        relative_path = cleaner.clean_name(relative_path)
       if track.get("Genre", "").lower() == "classical":
         relative_path = "Classical/%s" % relative_path
       elif not track.get("Compilation"):
