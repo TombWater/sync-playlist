@@ -1,5 +1,6 @@
 #! /usr/local/bin/python3
 
+import argparse
 import os
 import re
 import sys
@@ -163,8 +164,21 @@ class FilenameCleaner(object):
 
 
 def main():
+  """Clean up filenames in a directory to have only ascii characters"""
+
+  parser = argparse.ArgumentParser(
+      description=main.__doc__)
+  parser.add_argument("-f", "--force", action="store_true",
+      help="Really rename things rather than just showing what be renamed.")
+  parser.add_argument("dir")
+  args = parser.parse_args()
+
+  if not os.path.isdir(args.dir):
+    print("Must be a directory: %s" % args.dir, file=sys.stderr)
+    return 1
+
   my_dir = os.path.dirname(os.path.realpath(__file__))
-  dry_run = len(sys.argv) < 3 or sys.argv[2] != "-f"
+  dry_run = not args.force
   cleaner = FilenameCleaner(ccdict_path=my_dir, dry_run=dry_run)
   cleaner.recursive_clean(sys.argv[1])
 
