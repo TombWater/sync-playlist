@@ -89,7 +89,7 @@ class CharacterTranslator(object):
 
   def get_ccdict_translations(self, ccdict_path):
     translations = { }
-    mandarin_re = re.compile('U\+([0-9A-F]+)\.0\tfMandarin\t([a-z]*)')
+    mandarin_re = re.compile(r'U\+([0-9A-F]+)\.0\tfMandarin\t([a-z]*)')
     if os.path.isdir(ccdict_path):
       ccdict_path = os.path.join(ccdict_path, "ccdict.txt")
     print("Loading Mandarin translations from %s" % ccdict_path, file=sys.stderr)
