@@ -1,7 +1,7 @@
 #! /usr/local/bin/python3
 # Copyright 2008, Tom Bridgwater
 
-
+import argparse
 import os
 import sys
 import re
@@ -153,19 +153,18 @@ Usage:
 
     Use '?' for playlist name to show the names of all playlists.
   """
-  playlist_name = "Library"
-  xml_path = None
-  if argv is None:
-    argv = sys.argv
-  argv.pop(0) # remove program name
-  if argv:
-    playlist_name = argv.pop(0)
-  if argv:
-    xml_path = argv.pop(0)
 
-  itunes = iTunesLibrary(xml_path)
+  parser = argparse.ArgumentParser(
+      description=main.__doc__)
+  parser.add_argument("-l", "--library", default=None,
+      help="Path to the iTunes/Music Library.xml file.")
+  parser.add_argument("-p", "--playlist", default='Library',
+      help="Name of the iTunes/Music playlist (or ? to list all playlists).")
+  args = parser.parse_args()
 
-  if playlist_name == '?':
+  itunes = iTunesLibrary(args.library)
+
+  if args.playlist == '?':
     print('Music Folder: %s' % itunes.music_folder)
     print('[%d playlists]' % len(itunes.playlists))
     for playlist_name, playlist in sorted(itunes.playlists.items()):
@@ -173,9 +172,9 @@ Usage:
     return 0
 
   try:
-    playlist = itunes.playlists[playlist_name]
+    playlist = itunes.playlists[args.playlist]
   except KeyError:
-    print("[Error] No such playlist: '%s'" % playlist_name, file=sys.stderr)
+    print("[Error] No such playlist: '%s'" % args.playlist, file=sys.stderr)
     return 1
 
   for track in playlist:
