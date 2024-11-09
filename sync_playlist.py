@@ -89,43 +89,6 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None, dirty=False):
 
   return symlink_tree
 
-def split_tree(tree, size=50):
-  # First make fine-graned alpha groups
-  alpha_tree = dict()
-  alpha_groups = itertools.groupby(iter(tree.items()), lambda item: item[0][0].upper())
-  for alpha, items in alpha_groups:
-    alpha_tree.setdefault(alpha, dict()).update(dict(items))
-
-  # Combine consecutive alpha groups into chunks of the desired size.
-  chunk_tree = dict()
-  chunk = dict()
-  alpha_range = list()
-  alpha_keys = sorted(alpha_tree.keys())
-  while alpha_keys:
-    alpha = alpha_keys.pop(0)
-    alpha_range.append(alpha)
-    chunk.update(alpha_tree[alpha])
-    if len(chunk) >= size:
-      del(alpha_range[1:-1])
-      chunk_key = '-'.join(alpha_range)
-      chunk_tree[chunk_key] = chunk
-      chunk = dict()
-      alpha_range = list()
-  if chunk:
-    del(alpha_range[1:-1])
-    chunk_key = '-'.join(alpha_range)
-    chunk_tree[chunk_key] = chunk
-
-  return chunk_tree
-
-def print_tree(tree, level=0):
-  if type(tree) is not dict:
-    print("--> %s%s" % ("  " * level, tree))
-  else:
-    for n, (k, v) in enumerate(sorted(tree.items())):
-      print("%02d. %s%s" % (n + 1, "  " * level, k))
-      print_tree(v, level+1)
-
 def make_symlinks(top_dir, symlink_tree):
   if not os.path.isdir(top_dir):
     os.makedirs(top_dir)
