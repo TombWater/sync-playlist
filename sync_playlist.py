@@ -59,7 +59,7 @@ def compute_symlink_paths(playlist_name, my_dir, library_xml=None):
   cleaner = FilenameCleaner(ccdict_path=my_dir)
   itunes = iTunesLibrary(library_xml)
   playlist = itunes.playlists[playlist_name]
-  path_prefix = os.path.realpath(itunes.music_folder)
+  path_prefix = os.path.realpath(itunes.music_folder) + "/Music"
   print("iTunes folder: ", path_prefix)
   symlink_tree = {}
   for track in playlist:
